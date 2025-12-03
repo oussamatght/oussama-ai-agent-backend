@@ -1,6 +1,6 @@
 The backend powering the Oussama AI Agent, providing real-time conversation, WebSocket streaming, session management, and voice synthesis (Arabic & English).
 
-Built with Node.js, Express, OpenAI Realtime API, and WebSockets.
+Built with Node.js, Express, GEMINI AI Realtime API, and WebSockets.
 
 # ⭐ Features
 
