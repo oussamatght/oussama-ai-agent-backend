@@ -17,8 +17,8 @@ app.use(express.json());
 const PORT = process.env.PORT || 3020;
 
 mongoose.connect(process.env.DATABASE_URL)
-    .then(() => console.log("✅ Connected to MongoDB"))
-    .catch((err) => console.error("❌ MongoDB connection error:", err));
+    .then(() => console.log(" Connected to MongoDB"))
+    .catch((err) => console.error(" MongoDB connection error:", err));
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -280,7 +280,7 @@ app.post("/api/chat", async(req, res) => {
         });
 
     } catch (err) {
-        console.error("❌ Chat error:", err);
+        console.error(" Chat error:", err);
 
         if (err instanceof z.ZodError) {
             return res.status(400).json({
@@ -321,7 +321,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error("❌ Server error:", err);
+    console.error(" Server error:", err);
     res.status(500).json({
         success: false,
         error: "Internal server error"
@@ -329,6 +329,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📍 Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(` Server running on port ${PORT}`);
+    console.log(` Environment: ${process.env.NODE_ENV || "development"}`);
 });
