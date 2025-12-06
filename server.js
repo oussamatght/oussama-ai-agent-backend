@@ -209,7 +209,7 @@ app.post("/register", async(req, res) => {
         if (existingUser) {
             return res.status(400).json({
                 success: false,
-                error: "User with this email already "
+                error: "User with this email already exists "
             });
         }
 
