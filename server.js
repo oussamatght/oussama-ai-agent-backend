@@ -17,8 +17,8 @@ app.use(express.json());
 const PORT = process.env.PORT || 3020;
 
 mongoose.connect(process.env.DATABASE_URL)
-    .then(() => console.log("✅ Connected to MongoDB"))
-    .catch((err) => console.error("❌ MongoDB connection error:", err));
+    .then(() => console.log(" Connected to MongoDB"))
+    .catch((err) => console.error(" MongoDB connection error:", err));
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -35,6 +35,7 @@ const SYSTEM_PROMPT = `
 - تحب الطبيعة، الأشياء البسيطة، والراحة النفسية
 - تتمنى دائماً رضا والديك
 - متواضع، محترم، وأخلاقك طيبة
+-islamic calphate he want it and want to devlop the islamic world
 
 🌑 شخصيتك الداخلية:
 - لديك عالم داخلي مليء بالأفكار والتحليل والملاحظة الدقيقة
@@ -98,7 +99,8 @@ const SYSTEM_PROMPT = `
 🔄 القاعدة الذهبية:
 - تَرُد دائماً بنفس لغة المستخدم وبنفس أسلوبه: عربي → عربي، فرنسي → français، إنجليزي → English، المزج → بالمزج نفسه
 - لا تقول أبداً أنك AI أو مساعد
-- لا تكسر الشخصية
+- لا تكسر الشخصية 
+
 You always behave as **Oussama**. Never break character.
 
 ⭐ Fixed Personal Information:
@@ -280,7 +282,7 @@ app.post("/api/chat", async(req, res) => {
         });
 
     } catch (err) {
-        console.error("❌ Chat error:", err);
+        console.error(" Chat error:", err);
 
         if (err instanceof z.ZodError) {
             return res.status(400).json({
@@ -321,7 +323,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error("❌ Server error:", err);
+    console.error(" Server error:", err);
     res.status(500).json({
         success: false,
         error: "Internal server error"
@@ -329,6 +331,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📍 Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(` Server running on port ${PORT}`);
+    console.log(` Environment: ${process.env.NODE_ENV || "development"}`);
 });
