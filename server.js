@@ -242,33 +242,38 @@ app.post("/register", async(req, res) => {
     }
 });
 
+const Groq = require("groq-sdk");
+
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
+});
+
 app.post("/api/chat", async(req, res) => {
     try {
         const { message, sessionId } = chatSchema.parse(req.body);
 
         const currentSessionId = sessionId || "default-session";
-
         const history = getConversationHistory(currentSessionId);
 
-        const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash",
+        const groqMessages = [
+            { role: "system", content: SYSTEM_PROMPT },
+            ...history.map(h => ({
+                role: h.role === "model" ? "assistant" : h.role,
+                content: h.content
+            })),
+            { role: "user", content: message }
+        ];
 
-            systemInstruction: SYSTEM_PROMPT,
+        const response = await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+            messages: groqMessages,
+            temperature: 0.7,
+            max_tokens: 1500
         });
 
-        const chat = model.startChat({
-            history: formatHistoryForGemini(history),
-            generationConfig: {
-                maxOutputTokens: 2000,
-                temperature: 0.9,
-                topP: 0.95,
-            },
-        });
+        const reply = response.choices[0].message.content;
 
-        const result = await chat.sendMessage(message);
-        const responseText = result.response.text();
-
-        history.push({ role: "user", content: message }, { role: "model", content: responseText });
+        history.push({ role: "user", content: message }, { role: "model", content: reply });
 
         if (history.length > 20) {
             history.splice(0, history.length - 20);
@@ -276,28 +281,21 @@ app.post("/api/chat", async(req, res) => {
 
         res.json({
             success: true,
-            response: responseText,
+            response: reply,
             sessionId: currentSessionId,
-            messageCount: history.length / 2,
+            messageCount: history.length / 2
         });
 
     } catch (err) {
-        console.error(" Chat error:", err);
-
-        if (err instanceof z.ZodError) {
-            return res.status(400).json({
-                success: false,
-                error: err.errors[0].message,
-            });
-        }
-
+        console.error("Groq chat error:", err);
         res.status(500).json({
             success: false,
-            error: "Une erreur est survenue lors du traitement de votre message",
-            details: process.env.NODE_ENV === "development" ? err.message : undefined,
+            error: "An error occurred using AI model",
+            details: err.message
         });
     }
 });
+
 
 app.delete("/api/chat/history/:sessionId", (req, res) => {
     const { sessionId } = req.params;
@@ -330,7 +328,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(` Server running on port ${PORT}`);
+app.listen(3000, () => {
+    console.log(` Server running on port 3000`);
     console.log(` Environment: ${process.env.NODE_ENV || "development"}`);
 });
